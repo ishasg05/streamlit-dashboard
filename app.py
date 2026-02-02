@@ -388,7 +388,7 @@ elif page == "💎 Resource Quality":
     # st.markdown("---")
 
     # 3D Spatial Distribution
-    st.markdown(f"<h2 class='section-header'>3D Ore Body Visualization</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 class='section-header'>3D Ore Body Visualisation</h2>", unsafe_allow_html=True)
 
     fig_3d = px.scatter_3d(
         drill,
