@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 
 # -----------------------------
 # ENHANCED COLOR SCHEME
@@ -287,11 +286,18 @@ if page == "🏠 Executive Overview":
     for col, kpi in zip(kpi_cols_row1, kpis_row1):
         col.markdown(f"""
         <div class='insight-card' style='border-left-color:{kpi["color"]};background:{CARD_BG};min-height:180px'>
-            <div style='text-align:center;color:{ACCENT_RED};font-size:32px;margin-bottom:8px'>{kpi["icon"]}</div>
-            <h4 style='color:{ACCENT_RED};margin:0;font-size:20px;text-align:center'>{kpi["title"]}</h4>
-            <h2 style='margin:0px 0;font-size:32px;font-weight:bold;color:{TEXT_DARK};text-align:center'>{kpi["value"]}</h2>
-            <p style='color:{TEXT_DARK};margin:0;font-size:12px;text-align:center;opacity:0.8'>{kpi["unit"]}</p>
-            <p style='color:#666;margin:8px 0;font-size:11px;font-style:italic;text-align:center'>{kpi["description"]}</p>
+            <h4 style='color:{ACCENT_RED};margin:0;font-size:20px;text-align:center'>
+                {kpi["title"]}
+            </h4>
+            <h2 style='margin:0px 0;font-size:32px;font-weight:bold;color:{TEXT_DARK};text-align:center'>
+                {kpi["value"]}
+            </h2>
+            <p style='color:{TEXT_DARK};margin:0;font-size:12px;text-align:center;opacity:0.8'>
+                {kpi["unit"]}
+            </p>
+            <p style='color:#666;margin:8px 0;font-size:11px;font-style:italic;text-align:center'>
+                {kpi["description"]}
+            </p>
             <div style='text-align:center;margin-top:12px'>
                 <span style='background:{kpi["color"]};color:white;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600'>
                     {kpi["status"]}
