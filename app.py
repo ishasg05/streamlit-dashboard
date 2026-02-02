@@ -377,39 +377,6 @@ if page == "🏠 Executive Overview":
 
     st.markdown("<br><br>", unsafe_allow_html=True)
 
-    # KPI Methodology Explanation
-    st.markdown("<h2 class='section-header'>📋 KPI Methodology & Thresholds</h2>", unsafe_allow_html=True)
-
-    st.markdown(f"""
-    <div class='insight-card' style='border-left-color:{ACCENT_GOLD};background:{CARD_BG}'>
-        <h4 style='color:{ACCENT_RED};margin:0 0 15px 0'>How Indicators Were Calculated</h4>
-
-        <p style='margin:10px 0;color:{TEXT_DARK}'><b>Copper Equivalent (CuEq):</b> Calculated as Cu + 150×Au + 84×Ag (ppm). 
-        The multipliers represent relative economic value based on typical metal prices.</p>
-
-        <p style='margin:10px 0;color:{TEXT_DARK}'><b>Total Cu Recovered:</b> Sum of all copper recovery from flotation 
-        (cu_ppm × recovery_rate for each sample).</p>
-
-        <p style='margin:10px 0;color:{TEXT_DARK}'><b>Grinding Energy:</b> Bond Work Index multiplied by sample mass (kWh/t), 
-        representing total energy required for size reduction.</p>
-
-        <p style='margin:10px 0;color:{TEXT_DARK}'><b>High-Grade Classification:</b> Samples with CuEq > 2000 ppm are considered high-grade.</p>
-
-        <h4 style='color:{ACCENT_RED};margin:20px 0 15px 0'>Performance Threshold Rationale</h4>
-
-        <p style='margin:10px 0;color:{TEXT_DARK}'><b>Grade Thresholds:</b> Based on industry standards for porphyry copper deposits. 
-        CuEq > 1500 ppm typically indicates economically viable ore at current metal prices.</p>
-
-        <p style='margin:10px 0;color:{TEXT_DARK}'><b>Recovery Rate:</b> Modern flotation circuits typically achieve 75-85% recovery. 
-        Rates > 85% indicate excellent liberation and circuit performance.</p>
-
-        <p style='margin:10px 0;color:{TEXT_DARK}'><b>Energy Efficiency:</b> Grinding energy < 15 kWh/t represents efficient processing. 
-        Values > 20 kWh/t may indicate harder ore or inefficient circuit operation requiring review.</p>
-
-        <p style='margin:10px 0;color:{TEXT_DARK}'><b>High-Grade Percentage:</b> > 25% high-grade samples indicates a premium ore body. 
-        15-25% is typical for good deposits. < 15% suggests bulk tonnage low-grade operations.</p>
-    </div>
-    """, unsafe_allow_html=True)
 
 # =============================
 # PAGE 2: RESOURCE QUALITY
