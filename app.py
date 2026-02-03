@@ -207,7 +207,6 @@ drill, comm, flot = load_and_process_data()
 # -----------------------------
 # SIDEBAR NAVIGATION
 # -----------------------------
-st.sidebar.image("https://companieslogo.com/img/orig/EVN.AX_BIG-d477001f.png?t=1652945474", width='stretch')
 st.sidebar.markdown(f"<h2 style='color:{ACCENT_RED};text-align:center;'>Navigation</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
