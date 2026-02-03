@@ -434,9 +434,9 @@ if page == "Executive Overview":
 # =============================
 elif page == "Resource Quality":
     st.markdown(f"<h1 style='color:{ACCENT_RED}'>Resource Quality Assessment</h1>", unsafe_allow_html=True)
-    st.markdown(
-        f"<p style='color:{TEXT_DARK};font-size:16px'>Detailed analysis of drillhole data and ore body characteristics</p>",
-        unsafe_allow_html=True)
+    # st.markdown(
+    #     f"<p style='color:{TEXT_DARK};font-size:16px'>Detailed analysis of drillhole data and ore body characteristics</p>",
+    #     unsafe_allow_html=True)
     # st.markdown("---")
 
     # 3D Spatial Distribution
@@ -530,10 +530,10 @@ elif page == "Resource Quality":
 # PAGE 3: PROCESSING PERFORMANCE
 # =============================
 elif page == "Processing Performance":
-    st.markdown(f"<h1 style='color:{ACCENT_RED};font-weight:600;letter-spacing:0.5px;'>Processing Performance Analysis</h1>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color:{TEXT_DARK};font-size:15px;margin-bottom:20px;'>Comminution and flotation circuit efficiency metrics</p>",
-                unsafe_allow_html=True)
-    st.markdown("---")
+    st.markdown(f"<h1 style='color:{ACCENT_RED}'>Processing Performance Analysis</h1>", unsafe_allow_html=True)
+    # st.markdown(f"<p style='color:{TEXT_DARK};font-size:15px;margin-bottom:20px;'>Comminution and flotation circuit efficiency metrics</p>",
+    #             unsafe_allow_html=True)
+    # st.markdown("---")
 
     # Compact process selection bar with horizontal layout
     st.markdown(f"""
@@ -612,14 +612,14 @@ elif page == "Processing Performance":
     )
     
     st.markdown("</div></div>", unsafe_allow_html=True)
-    
-    # Clean up the process name
-    # process_tab = process_tab.split(" ")[1]  # Remove emoji
+
 
     if process_tab == "Comminution":
-        st.markdown(f"<h2 class='subsection-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Comminution circuit efficiency metrics</p>",
-                    unsafe_allow_html=True)
+        st.markdown(f"<h2 class='section-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
+        # st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Comminution circuit efficiency metrics</p>",
+        #             unsafe_allow_html=True)
+
+        st.markdown("</div></div>", unsafe_allow_html=True)
 
         # Comminution KPIs
         col1, col2, col3, col4 = st.columns(4)
@@ -681,9 +681,11 @@ elif page == "Processing Performance":
             st.plotly_chart(fig_energy_eff, use_container_width=True)
 
     else:  # Flotation Circuit
-        st.markdown(f"<h2 class='subsection-header'>Metal Recovery & Separation Performance</h2>", unsafe_allow_html=True)
-        st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Flotation circuit efficiency metrics</p>",
-                    unsafe_allow_html=True)
+        st.markdown(f"<h2 class='section-header'>Metal Recovery & Separation Performance</h2>", unsafe_allow_html=True)
+        # st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Flotation circuit efficiency metrics</p>",
+        #             unsafe_allow_html=True)
+
+        st.markdown("</div></div>", unsafe_allow_html=True)
 
         # Flotation KPIs
         col1, col2, col3, col4 = st.columns(4)
@@ -765,12 +767,14 @@ elif page == "Processing Performance":
 # =============================
 else:  # Download Report
     st.markdown(f"<h1 style='color:{ACCENT_RED}'>Download Report</h1>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color:{TEXT_DARK};font-size:16px'>Export monthly summary report</p>",
-                unsafe_allow_html=True)
-    st.markdown("---")
+    # st.markdown(f"<p style='color:{TEXT_DARK};font-size:16px'>Export monthly summary report</p>",
+    #             unsafe_allow_html=True)
+    # st.markdown("---")
 
     # Monthly summary report
-    st.markdown("### Monthly Summary Report")
+    # st.markdown("### Monthly Summary Report")
+    st.markdown(f"<h2 class='section-header'>Monthly Summary Report</h2>", unsafe_allow_html=True)
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
     summary_text = f"""
 MONTHLY PROCESSING SUMMARY REPORT
