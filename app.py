@@ -539,7 +539,7 @@ elif page == "Resource Quality":
 # PAGE 3: PROCESSING PERFORMANCE
 # =============================
 elif page == "Processing Performance":
-    st.markdown(f"<h1 style='color:{ACCENT_RED};font-weight:600;letter-spacing:0.5px;'>Processing Performance Analysis</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='color:{ACCENT_RED}'>Processing Performance Analysis</h1>", unsafe_allow_html=True)
     # st.markdown(f"<p style='color:{TEXT_DARK};font-size:15px;margin-bottom:20px;'>Comminution and flotation circuit efficiency metrics</p>",
     #             unsafe_allow_html=True)
     # st.markdown("---")
@@ -626,7 +626,8 @@ elif page == "Processing Performance":
     # process_tab = process_tab.split(" ")[1]  # Remove emoji
 
     if process_tab == "Comminution":
-        st.markdown(f"<h2 class='subsection-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 class='section-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
+        st.markdown("</div></div>", unsafe_allow_html=True)
         # st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Comminution circuit efficiency metrics</p>",
                     # unsafe_allow_html=True)
 
@@ -690,7 +691,8 @@ elif page == "Processing Performance":
             st.plotly_chart(fig_energy_eff, use_container_width=True)
 
     else:  # Flotation Circuit
-        st.markdown(f"<h2 class='subsection-header'>Metal Recovery & Separation Performance</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 class='section-header'>Metal Recovery & Separation Performance</h2>", unsafe_allow_html=True)
+        st.markdown("</div></div>", unsafe_allow_html=True)
         # st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Flotation circuit efficiency metrics</p>",
         #             unsafe_allow_html=True)
 
@@ -846,7 +848,6 @@ st.markdown(
     <div style='text-align:center;color:{TEXT_DARK};padding:20px'>
         <p style='font-size:14px;margin:0'>End-of-Month Processing Dashboard | Mineral Resource Management</p>
         <p style='font-size:12px;margin:5px 0;color:#999'>
-            Data represents operational performance metrics for the current period
             Data represents operational performance metrics for the current period
         </p>
     </div>
