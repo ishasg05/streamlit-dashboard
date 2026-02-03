@@ -32,7 +32,25 @@ st.set_page_config(
 # CUSTOM CSS STYLING
 # -----------------------------
 st.markdown(f"""
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
+    .material-icons {{
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 20px;
+        display: inline-block;
+        line-height: 1;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+        color: {ACCENT_RED};
+        margin-right: 8px;
+        vertical-align: middle;
+    }}
+
     /* Main background */
     .stApp {{
         background-color: {BG};
@@ -168,19 +186,55 @@ drill, comm, flot = load_and_process_data()
 # -----------------------------
 # SIDEBAR NAVIGATION
 # -----------------------------
-st.sidebar.markdown(f"<h2 style='color:{ACCENT_RED};text-align:center;'>📊 Navigation</h2>", unsafe_allow_html=True)
+st.sidebar.image("https://companieslogo.com/img/orig/EVN.AX_BIG-d477001f.png?t=1652945474", width='stretch')
+st.sidebar.markdown(f"<h2 style='color:{ACCENT_RED};text-align:center;'>Navigation</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
-page = st.sidebar.radio(
-    "Select Section:",
-    ["🏠 Executive Overview",
-     "💎 Resource Quality",
-     "⚙️ Processing Performance",
-     "📊 Download Report"],
-    label_visibility="collapsed"
-)
+# Initialize page if not set
+if "page" not in st.session_state:
+    st.session_state.page = "Executive Overview"
+
+# Custom navigation buttons with HTML styling
+st.sidebar.markdown(f"""
+<style>
+    .stButton > button {{
+        background-color: {SIDEBAR_BG};
+        color: {ACCENT_RED};
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        width: 100%;
+        padding: 14px;
+        margin: 10px 0;
+    }}
+    .stButton > button:hover {{
+        background-color: {CARD_BG};
+    }}
+</style>
+""", unsafe_allow_html=True)
+
+if st.sidebar.button(":material/home: Executive Overview", use_container_width=True, key="btn_exec"):
+    st.session_state.page = "Executive Overview"
+    st.rerun()
+
+if st.sidebar.button(":material/diamond: Resource Quality", use_container_width=True, key="btn_res"):
+    st.session_state.page = "Resource Quality"
+    st.rerun()
+
+if st.sidebar.button(":material/manufacturing: Processing Performance", use_container_width=True, key="btn_proc"):
+    st.session_state.page = "Processing Performance"
+    st.rerun()
+
+if st.sidebar.button(":material/add_chart: Download Report", use_container_width=True, key="btn_dl"):
+    st.session_state.page = "Download Report"
+    st.rerun()
 
 st.sidebar.markdown("---")
+
+# Get current page from session state
+page = st.session_state.page
+
 st.sidebar.markdown(f"""
 <div style='background:{CARD_BG};padding:15px;border-radius:8px;border:2px solid {BORDER_COLOR}'>
     <h4 style='color:{ACCENT_RED};margin:0;'>Dashboard Info</h4>
@@ -216,9 +270,8 @@ CONTINUOUS_ORANGES = px.colors.sequential.Oranges
 # =============================
 # PAGE 1: EXECUTIVE OVERVIEW
 # =============================
-if page == "🏠 Executive Overview":
-    st.markdown(
-        f"<h1 style='color:{ACCENT_RED};text-align:center;font-size:42px'>⛏️ End-of-Month Processing Dashboard</h1>",
+if page == "Executive Overview":
+    st.markdown(f"<h1 style='color:{ACCENT_RED};text-align:center;font-size:42px'>End-of-Month Processing Dashboard</h1>",
         unsafe_allow_html=True
     )
     st.markdown(
@@ -230,7 +283,7 @@ if page == "🏠 Executive Overview":
     # -----------------------------
     # TOP KPIs - FIRST ROW: GRADE METRICS
     # -----------------------------
-    st.markdown("<h2 class='section-header'>📈 Key Performance Indicators</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h2 class='section-header'>Key Performance Indicators</h2>", unsafe_allow_html=True)
 
     # Calculate KPI values
     avg_cueq = drill['Copper Equivalent (ppm)'].mean()
@@ -248,7 +301,7 @@ if page == "🏠 Executive Overview":
             "value": f"{avg_cueq:.1f}",
             "unit": "ppm",
             "description": "Copper Equivalent",
-            "icon": "📊",
+            "icon": "",
             "status": "Excellent" if avg_cueq > 1500 else "Good" if avg_cueq > 1000 else "Monitor",
             "color": COLOR_EXCELLENT if avg_cueq > 1500 else COLOR_GOOD if avg_cueq > 1000 else COLOR_WARNING
         },
@@ -257,7 +310,7 @@ if page == "🏠 Executive Overview":
             "value": f"{avg_cu:.1f}",
             "unit": "ppm",
             "description": "Copper Content",
-            "icon": "🔶",
+            "icon": "",
             "status": "Excellent" if avg_cu > 1200 else "Good" if avg_cu > 800 else "Monitor",
             "color": COLOR_EXCELLENT if avg_cu > 1200 else COLOR_GOOD if avg_cu > 800 else COLOR_WARNING
         },
@@ -266,7 +319,7 @@ if page == "🏠 Executive Overview":
             "value": f"{avg_au:.2f}",
             "unit": "ppm",
             "description": "Gold Content",
-            "icon": "🥇",
+            "icon": "",
             "status": "Excellent" if avg_au > 0.5 else "Good" if avg_au > 0.3 else "Monitor",
             "color": COLOR_EXCELLENT if avg_au > 0.5 else COLOR_GOOD if avg_au > 0.3 else COLOR_WARNING
         },
@@ -275,7 +328,7 @@ if page == "🏠 Executive Overview":
             "value": f"{avg_ag:.2f}",
             "unit": "ppm",
             "description": "Silver Content",
-            "icon": "⚪",
+            "icon": "",
             "status": "Excellent" if avg_ag > 10 else "Good" if avg_ag > 5 else "Monitor",
             "color": COLOR_EXCELLENT if avg_ag > 10 else COLOR_GOOD if avg_ag > 5 else COLOR_WARNING
         }
@@ -324,7 +377,7 @@ if page == "🏠 Executive Overview":
             "value": f"{total_cu_recovered:.0f}",
             "unit": "ppm·units",
             "description": "Revenue driver",
-            "icon": "💰",
+            "icon": "",
             "status": "Excellent" if total_cu_recovered > 50000 else "Good" if total_cu_recovered > 30000 else "Monitor",
             "color": COLOR_EXCELLENT if total_cu_recovered > 50000 else COLOR_GOOD if total_cu_recovered > 30000 else COLOR_WARNING
         },
@@ -333,7 +386,7 @@ if page == "🏠 Executive Overview":
             "value": f"{avg_recovery:.1f}",
             "unit": "%",
             "description": "Process efficiency",
-            "icon": "🎯",
+            "icon": "",
             "status": "Excellent" if avg_recovery > 85 else "Good" if avg_recovery > 75 else "Review",
             "color": COLOR_EXCELLENT if avg_recovery > 85 else COLOR_GOOD if avg_recovery > 75 else COLOR_CRITICAL
         },
@@ -342,7 +395,7 @@ if page == "🏠 Executive Overview":
             "value": f"{avg_energy:.1f}",
             "unit": "kWh/t",
             "description": "Operating cost",
-            "icon": "⚡",
+            "icon": "",
             "status": "Efficient" if avg_energy < 15 else "Monitor" if avg_energy < 20 else "High Cost",
             "color": COLOR_EXCELLENT if avg_energy < 15 else COLOR_WARNING if avg_energy < 20 else COLOR_CRITICAL
         },
@@ -351,7 +404,7 @@ if page == "🏠 Executive Overview":
             "value": f"{high_grade_count}",
             "unit": f"({high_grade_pct:.1f}%)",
             "description": "Mine planning",
-            "icon": "💎",
+            "icon": "",
             "status": "Excellent" if high_grade_pct > 25 else "Good" if high_grade_pct > 15 else "Limited",
             "color": COLOR_EXCELLENT if high_grade_pct > 25 else COLOR_GOOD if high_grade_pct > 15 else COLOR_WARNING
         }
@@ -376,12 +429,11 @@ if page == "🏠 Executive Overview":
 
     st.markdown("<br><br>", unsafe_allow_html=True)
 
-
 # =============================
 # PAGE 2: RESOURCE QUALITY
 # =============================
-elif page == "💎 Resource Quality":
-    st.markdown(f"<h1 style='color:{ACCENT_RED}'>💎 Resource Quality Assessment</h1>", unsafe_allow_html=True)
+elif page == "Resource Quality":
+    st.markdown(f"<h1 style='color:{ACCENT_RED}'>Resource Quality Assessment</h1>", unsafe_allow_html=True)
     st.markdown(
         f"<p style='color:{TEXT_DARK};font-size:16px'>Detailed analysis of drillhole data and ore body characteristics</p>",
         unsafe_allow_html=True)
@@ -477,25 +529,99 @@ elif page == "💎 Resource Quality":
 # =============================
 # PAGE 3: PROCESSING PERFORMANCE
 # =============================
-elif page == "⚙️ Processing Performance":
-    st.markdown(f"<h1 style='color:{ACCENT_RED}'>⚙️ Processing Performance Analysis</h1>", unsafe_allow_html=True)
-    st.markdown(f"<p style='color:{TEXT_DARK};font-size:16px'>Comminution and flotation circuit efficiency metrics</p>",
+elif page == "Processing Performance":
+    st.markdown(f"<h1 style='color:{ACCENT_RED};font-weight:600;letter-spacing:0.5px;'>Processing Performance Analysis</h1>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:{TEXT_DARK};font-size:15px;margin-bottom:20px;'>Comminution and flotation circuit efficiency metrics</p>",
                 unsafe_allow_html=True)
     st.markdown("---")
 
-    # Process selection
+    # Compact process selection bar with horizontal layout
+    st.markdown(f"""
+    <style>
+        /* Container for label and radio buttons */
+        .process-selector-container {{
+            background: {CARD_BG};
+            border: 2px solid {ACCENT_ORANGE};
+            border-radius: 4px;
+            padding: 14px 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }}
+        
+        .process-selector-label {{
+            font-size: 16px;
+            font-weight: 600;
+            color: {ACCENT_RED};
+            letter-spacing: 0.3px;
+            margin: 0;
+            white-space: nowrap;
+        }}
+        
+        /* Style the radio buttons to be inline */
+        .process-radio {{
+            flex: 1;
+        }}
+        
+        .process-radio > div {{
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            display: flex !important;
+            gap: 12px;
+            justify-content: flex-start;
+        }}
+        
+        .process-radio > div > label {{
+            background: {SIDEBAR_BG};
+            border: 1px solid {BORDER_COLOR};
+            padding: 8px 24px !important;
+            border-radius: 3px;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0 !important;
+        }}
+        
+        .process-radio > div > label:hover {{
+            background: {CARD_BG};
+            border-color: {ACCENT_ORANGE};
+        }}
+        
+        /* Hide the radio circle */
+        .process-radio > div > label > div:first-child {{
+            display: none !important;
+        }}
+    </style>
+    
+    <div class='process-selector-container'>
+        <span class='process-selector-label'>Select Process Stage:</span>
+        <div class='process-radio'>
+    """, unsafe_allow_html=True)
+    
     process_tab = st.radio(
-        "Select Process Stage:",
-        ["⚙️ Comminution Circuit", "🧪 Flotation Circuit"],
-        horizontal=True
+        "",
+        ["⚙️ Comminution", "🧪 Flotation"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="process_selector"
     )
+    
+    st.markdown("</div></div>", unsafe_allow_html=True)
+    
+    # Clean up the process name
+    process_tab = process_tab.split(" ")[1]  # Remove emoji
 
-    if process_tab == "⚙️ Comminution Circuit":
-        st.markdown("## Grinding & Size Reduction Performance")
-        st.markdown(f"<p style='color:{TEXT_DARK};font-size:16px'>Comminution circuit efficiency metrics</p>",
+    if process_tab == "Comminution":
+        st.markdown(f"<h2 class='subsection-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Comminution circuit efficiency metrics</p>",
                     unsafe_allow_html=True)
 
-        # Comminution KPIs (in gold to match flotation)
+        # Comminution KPIs
         col1, col2, col3, col4 = st.columns(4)
 
         comm_metrics = [
@@ -507,10 +633,10 @@ elif page == "⚙️ Processing Performance":
 
         for col, (label, value, unit) in zip([col1, col2, col3, col4], comm_metrics):
             col.markdown(f"""
-            <div style='background:{ACCENT_GOLD};padding:18px;border-radius:10px;text-align:center;border:2px solid {BORDER_COLOR}'>
-                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:20px'>{label}</h4>
-                <h2 style='color:{TEXT_LIGHT};margin:8px 0;font-size:32px'>{value}</h2>
-                <p style='color:{TEXT_LIGHT};margin:0;font-size:11px'>{unit}</p>
+            <div style='background:{ACCENT_GOLD};padding:18px;border-radius:3px;text-align:center;border:1px solid {BORDER_COLOR};box-shadow: 0 1px 2px rgba(0,0,0,0.08);'>
+                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:15px;font-weight:600;letter-spacing:0.2px;'>{label}</h4>
+                <h2 style='color:{TEXT_LIGHT};margin:8px 0;font-size:32px;font-weight:700;'>{value}</h2>
+                <p style='color:{TEXT_LIGHT};margin:0;font-size:10px;opacity:0.9;'>{unit}</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -520,7 +646,6 @@ elif page == "⚙️ Processing Performance":
         col1, col2 = st.columns(2)
 
         with col1:
-            # Grinding energy vs copper grade (colored by size reduction ratio)
             fig_energy_grade = px.scatter(
                 comm,
                 x="cu_ppm",
@@ -536,10 +661,9 @@ elif page == "⚙️ Processing Performance":
                 color_continuous_scale="oryel",
             )
             fig_energy_grade = configure_plot(fig_energy_grade, height=450)
-            st.plotly_chart(fig_energy_grade, width='stretch')
+            st.plotly_chart(fig_energy_grade, use_container_width=True)
 
         with col2:
-            # Energy efficiency per cu unit
             fig_energy_eff = px.scatter(
                 comm,
                 x="cu_ppm",
@@ -554,14 +678,14 @@ elif page == "⚙️ Processing Performance":
                 color_continuous_scale="oryel"
             )
             fig_energy_eff = configure_plot(fig_energy_eff, height=450)
-            st.plotly_chart(fig_energy_eff, width='stretch')
+            st.plotly_chart(fig_energy_eff, use_container_width=True)
 
     else:  # Flotation Circuit
-        st.markdown("## Metal Recovery & Separation Performance")
-        st.markdown(f"<p style='color:{TEXT_DARK};font-size:16px'>Flotation circuit efficiency metrics</p>",
+        st.markdown(f"<h2 class='subsection-header'>Metal Recovery & Separation Performance</h2>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Flotation circuit efficiency metrics</p>",
                     unsafe_allow_html=True)
 
-        # Flotation KPIs (in gold to match comminution)
+        # Flotation KPIs
         col1, col2, col3, col4 = st.columns(4)
 
         flot_metrics = [
@@ -573,10 +697,10 @@ elif page == "⚙️ Processing Performance":
 
         for col, (label, value, unit) in zip([col1, col2, col3, col4], flot_metrics):
             col.markdown(f"""
-            <div style='background:{ACCENT_GOLD};padding:18px;border-radius:10px;text-align:center;border:2px solid {BORDER_COLOR}'>
-                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:20px'>{label}</h4>
-                <h2 style='color:{TEXT_LIGHT};margin:8px 0;font-size:32px'>{value}</h2>
-                <p style='color:{TEXT_LIGHT};margin:0;font-size:11px'>{unit}</p>
+            <div style='background:{ACCENT_GOLD};padding:18px;border-radius:3px;text-align:center;border:1px solid {BORDER_COLOR};box-shadow: 0 1px 2px rgba(0,0,0,0.08);'>
+                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:15px;font-weight:600;letter-spacing:0.2px;'>{label}</h4>
+                <h2 style='color:{TEXT_LIGHT};margin:8px 0;font-size:32px;font-weight:700;'>{value}</h2>
+                <p style='color:{TEXT_LIGHT};margin:0;font-size:10px;opacity:0.9;'>{unit}</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -586,7 +710,6 @@ elif page == "⚙️ Processing Performance":
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            # Recovery rate vs feed copper grade (colored by recovered cu, no trendline)
             fig_recovery_grade = px.scatter(
                 flot,
                 x="cu_ppm",
@@ -601,10 +724,9 @@ elif page == "⚙️ Processing Performance":
                 color_continuous_scale="oryel"
             )
             fig_recovery_grade = configure_plot(fig_recovery_grade, height=450)
-            st.plotly_chart(fig_recovery_grade, width='stretch')
+            st.plotly_chart(fig_recovery_grade, use_container_width=True)
 
         with col2:
-            # Actual copper recovered
             fig_recovered = px.scatter(
                 flot,
                 x="cu_ppm",
@@ -619,10 +741,9 @@ elif page == "⚙️ Processing Performance":
                 color_continuous_scale="oryel"
             )
             fig_recovered = configure_plot(fig_recovered, height=450)
-            st.plotly_chart(fig_recovered, width='stretch')
+            st.plotly_chart(fig_recovered, use_container_width=True)
 
         with col3:
-            # Recovery vs grindability
             fig_grindability = px.scatter(
                 flot,
                 x="xr",
@@ -637,19 +758,19 @@ elif page == "⚙️ Processing Performance":
                 color_continuous_scale="oryel"
             )
             fig_grindability = configure_plot(fig_grindability, height=450)
-            st.plotly_chart(fig_grindability, width='stretch')
+            st.plotly_chart(fig_grindability, use_container_width=True)
 
 # =============================
 # PAGE 4: Download Report
 # =============================
 else:  # Download Report
-    st.markdown(f"<h1 style='color:{ACCENT_RED}'>📊 Download Report</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='color:{ACCENT_RED}'>Download Report</h1>", unsafe_allow_html=True)
     st.markdown(f"<p style='color:{TEXT_DARK};font-size:16px'>Export monthly summary report</p>",
                 unsafe_allow_html=True)
     st.markdown("---")
 
     # Monthly summary report
-    st.markdown("### 📄 Monthly Summary Report")
+    st.markdown("### Monthly Summary Report")
 
     summary_text = f"""
 MONTHLY PROCESSING SUMMARY REPORT
@@ -698,7 +819,7 @@ End of Report
     st.text_area("Report Preview:", summary_text, height=400)
 
     st.download_button(
-        label="📥 Download Monthly Summary Report (TXT)",
+        label="Download Monthly Summary Report (TXT)",
         data=summary_text,
         file_name='monthly_summary_report.txt',
         mime='text/plain',
@@ -712,7 +833,7 @@ st.markdown("---")
 st.markdown(
     f"""
     <div style='text-align:center;color:{TEXT_DARK};padding:20px'>
-        <p style='font-size:14px;margin:0'>📊 End-of-Month Processing Dashboard | Mineral Resource Management</p>
+        <p style='font-size:14px;margin:0'>End-of-Month Processing Dashboard | Mineral Resource Management</p>
         <p style='font-size:12px;margin:5px 0;color:#999'>
             Data represents operational performance metrics for the current period
             Data represents operational performance metrics for the current period
