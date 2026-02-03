@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import numpy as np
 
 # -----------------------------
 # ENHANCED COLOR SCHEME
@@ -154,8 +155,6 @@ def load_and_process_data():
     comm = pd.read_csv("comm.csv")
     flot = pd.read_csv("flot.csv")
 
-    flot["recovery_pct"] = flot["recovery_pct"] * 100
-
     # DRILLHOLES
     drill["Copper Equivalent (ppm)"] = (
             drill["cu_ppm"] + 150 * drill["au_ppm"] + 84 * drill["ag_ppm"]
@@ -166,16 +165,38 @@ def load_and_process_data():
         labels=["Low", "Medium", "High"]
     )
 
-    # COMMINUTION
+    # COMMINUTION - Add mass simulation for realistic metrics
     comm["Average Thickness (mm)"] = (comm["th1"] + comm["th2"] + comm["th3"]) / 3
-    # Fix: Ensure F80_P80 is created (F80 divided by P80)
     comm["F80_P80"] = comm["F80"] / comm["P80"].replace(0, 1)
     comm["BondWorkMass"] = comm["A"] * comm["M"]
+    
+    # Simulate mass processed (tonnes) based on thickness
+    np.random.seed(42)
+    comm['mass_t'] = comm['Average Thickness (mm)'] * np.random.uniform(20, 50, size=len(comm))
+    
+    # Calculate copper potential in kg
+    comm["Cu_potential_kg"] = comm["cu_ppm"] * comm["mass_t"] * 0.001
+    comm["Energy_per_Cu"] = comm["BondWorkMass"] / comm["Cu_potential_kg"].replace(0, 1)
     comm["RecoveryPotential"] = comm["BondWorkMass"] * comm["cu_ppm"]
-    comm["Energy_per_Cu"] = comm["BondWorkMass"] / comm["cu_ppm"].replace(0, 1)
 
-    # FLOTATION
-    flot["RecoveredCu"] = flot["cu_ppm"] * (flot["recovery_pct"] / 100)
+    # FLOTATION - Add mass simulation and actual recovery calculations
+    np.random.seed(42)
+    flot['feed_mass_t'] = np.random.uniform(1, 10, size=len(flot))
+    
+    # Calculate actual copper recovered in kg
+    flot['cu_feed_kg'] = flot['cu_ppm'] * flot['feed_mass_t'] * 0.001
+    flot['cu_recovered_kg'] = flot['cu_ppm'] * flot['feed_mass_t'] * flot['recovery_pct'] / 1000
+    
+    # Calculate recovery efficiency percentage
+    flot['recovery_eff_pct'] = (flot['cu_recovered_kg'] / flot['cu_feed_kg'].replace(0, 1)) * 100
+    flot["recovery_pct"] = flot["recovery_pct"] * 100
+    
+    # Enrichment ratio if concentrate grade exists
+    if 'cu_ppm_conc' in flot.columns:
+        flot['enrichment_ratio'] = flot['cu_ppm_conc'] / flot['cu_ppm'].replace(0, 1)
+    
+    # Keep legacy column for backward compatibility
+    flot["RecoveredCu"] = flot['cu_recovered_kg']
     flot["Recovery_Efficiency"] = flot["recovery_pct"] / flot["xr"].replace(0, 1)
 
     return drill, comm, flot
@@ -234,18 +255,6 @@ st.sidebar.markdown("---")
 
 # Get current page from session state
 page = st.session_state.page
-
-st.sidebar.markdown(f"""
-<div style='background:{CARD_BG};padding:15px;border-radius:8px;border:2px solid {BORDER_COLOR}'>
-    <h4 style='color:{ACCENT_RED};margin:0;'>Dashboard Info</h4>
-    <p style='font-size:12px;margin:10px 0 0 0;color:{TEXT_DARK}'>
-        <b>Period:</b> Current Month<br>
-        <b>Data Points:</b> {len(drill)} drillholes<br>
-        <b>Last Updated:</b> Today
-    </p>
-</div>
-""", unsafe_allow_html=True)
-
 
 # -----------------------------
 # REUSABLE PLOT CONFIGURATION
@@ -365,7 +374,7 @@ if page == "Executive Overview":
         f"<h3 style='color:{ACCENT_ORANGE};margin-top:20px;margin-bottom:15px'>Processing Performance Metrics</h3>",
         unsafe_allow_html=True)
 
-    total_cu_recovered = flot['RecoveredCu'].sum()
+    total_cu_recovered = flot['cu_recovered_kg'].sum()
     avg_recovery = flot['recovery_pct'].mean()
     avg_energy = comm['BondWorkMass'].mean()
     high_grade_count = (drill['GradeCategory'] == 'High').sum()
@@ -375,7 +384,7 @@ if page == "Executive Overview":
         {
             "title": "Total Cu Recovered",
             "value": f"{total_cu_recovered:.0f}",
-            "unit": "ppm·units",
+            "unit": "kg",
             "description": "Revenue driver",
             "icon": "",
             "status": "Excellent" if total_cu_recovered > 50000 else "Good" if total_cu_recovered > 30000 else "Monitor",
@@ -530,7 +539,7 @@ elif page == "Resource Quality":
 # PAGE 3: PROCESSING PERFORMANCE
 # =============================
 elif page == "Processing Performance":
-    st.markdown(f"<h1 style='color:{ACCENT_RED}'>Processing Performance Analysis</h1>", unsafe_allow_html=True)
+    st.markdown(f"<h1 style='color:{ACCENT_RED};font-weight:600;letter-spacing:0.5px;'>Processing Performance Analysis</h1>", unsafe_allow_html=True)
     # st.markdown(f"<p style='color:{TEXT_DARK};font-size:15px;margin-bottom:20px;'>Comminution and flotation circuit efficiency metrics</p>",
     #             unsafe_allow_html=True)
     # st.markdown("---")
@@ -612,31 +621,31 @@ elif page == "Processing Performance":
     )
     
     st.markdown("</div></div>", unsafe_allow_html=True)
-
+    
+    # Clean up the process name
+    # process_tab = process_tab.split(" ")[1]  # Remove emoji
 
     if process_tab == "Comminution":
-        st.markdown(f"<h2 class='section-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 class='subsection-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
         # st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Comminution circuit efficiency metrics</p>",
-        #             unsafe_allow_html=True)
-
-        st.markdown("</div></div>", unsafe_allow_html=True)
+                    # unsafe_allow_html=True)
 
         # Comminution KPIs
         col1, col2, col3, col4 = st.columns(4)
 
         comm_metrics = [
-            ("Avg Energy", f"{comm['BondWorkMass'].mean():.1f}", "kWh/t"),
-            ("Avg Size Reduction", f"{comm['F80_P80'].mean():.2f}", "F80/P80 ratio"),
+            ("Avg Grinding Energy", f"{comm['BondWorkMass'].mean():.1f}", "kWh/t"),
+            ("Avg Size Reduction", f"{comm['F80_P80'].mean():.1f}:1", "F80:P80"),
             ("Avg Thickness", f"{comm['Average Thickness (mm)'].mean():.1f}", "mm"),
-            ("Max Recovery Pot.", f"{comm['RecoveryPotential'].max():.0f}", "units")
+            ("Max Cu Potential", f"{comm['Cu_potential_kg'].max():.0f}", "kg")
         ]
 
         for col, (label, value, unit) in zip([col1, col2, col3, col4], comm_metrics):
             col.markdown(f"""
             <div style='background:{ACCENT_GOLD};padding:18px;border-radius:3px;text-align:center;border:1px solid {BORDER_COLOR};box-shadow: 0 1px 2px rgba(0,0,0,0.08);'>
-                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:15px;font-weight:600;letter-spacing:0.2px;'>{label}</h4>
+                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:20px;font-weight:600;letter-spacing:0.2px;'>{label}</h4>
                 <h2 style='color:{TEXT_LIGHT};margin:8px 0;font-size:32px;font-weight:700;'>{value}</h2>
-                <p style='color:{TEXT_LIGHT};margin:0;font-size:10px;opacity:0.9;'>{unit}</p>
+                <p style='color:{TEXT_LIGHT};margin:0;font-size:15px;opacity:0.9;'>{unit}</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -681,28 +690,26 @@ elif page == "Processing Performance":
             st.plotly_chart(fig_energy_eff, use_container_width=True)
 
     else:  # Flotation Circuit
-        st.markdown(f"<h2 class='section-header'>Metal Recovery & Separation Performance</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 class='subsection-header'>Metal Recovery & Separation Performance</h2>", unsafe_allow_html=True)
         # st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Flotation circuit efficiency metrics</p>",
         #             unsafe_allow_html=True)
-
-        st.markdown("</div></div>", unsafe_allow_html=True)
 
         # Flotation KPIs
         col1, col2, col3, col4 = st.columns(4)
 
         flot_metrics = [
-            ("Avg Recovery", f"{flot['recovery_pct'].mean():.1f}", "%"),
-            ("Total Cu Recovered", f"{flot['RecoveredCu'].sum():.0f}", "ppm·units"),
-            ("Samples >90%", f"{(flot['recovery_pct'] > 90).sum()}", "count"),
-            ("Max Recovery", f"{flot['recovery_pct'].max():.1f}", "%")
+            ("Avg Recovery Rate", f"{flot['recovery_pct'].mean():.1f}", "%"),
+            ("Total Cu Recovered", f"{flot['cu_recovered_kg'].sum():.0f}", "kg"),
+            ("Recovery Rate Std Dev", f"{flot['recovery_pct'].std():.1f}", "%"),
+            ("Max Recovery Rate", f"{flot['recovery_pct'].max():.1f}", "%")
         ]
 
         for col, (label, value, unit) in zip([col1, col2, col3, col4], flot_metrics):
             col.markdown(f"""
             <div style='background:{ACCENT_GOLD};padding:18px;border-radius:3px;text-align:center;border:1px solid {BORDER_COLOR};box-shadow: 0 1px 2px rgba(0,0,0,0.08);'>
-                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:15px;font-weight:600;letter-spacing:0.2px;'>{label}</h4>
+                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:20px;font-weight:600;letter-spacing:0.2px;'>{label}</h4>
                 <h2 style='color:{TEXT_LIGHT};margin:8px 0;font-size:32px;font-weight:700;'>{value}</h2>
-                <p style='color:{TEXT_LIGHT};margin:0;font-size:10px;opacity:0.9;'>{unit}</p>
+                <p style='color:{TEXT_LIGHT};margin:0;font-size:15px;opacity:0.9;'>{unit}</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -716,12 +723,12 @@ elif page == "Processing Performance":
                 flot,
                 x="cu_ppm",
                 y="recovery_pct",
-                color="RecoveredCu",
+                color="cu_recovered_kg",
                 title="<b>Recovery Rate vs Feed Grade</b>",
                 labels={
                     "cu_ppm": "Feed Copper Grade (ppm)",
                     "recovery_pct": "Recovery Rate (%)",
-                    "RecoveredCu": "Recovered Cu (ppm)"
+                    "cu_recovered_kg": "Recovered Cu (kg)"
                 },
                 color_continuous_scale="oryel"
             )
@@ -732,12 +739,12 @@ elif page == "Processing Performance":
             fig_recovered = px.scatter(
                 flot,
                 x="cu_ppm",
-                y="RecoveredCu",
+                y="cu_recovered_kg",
                 color="recovery_pct",
                 title="<b>Actual Copper Recovery</b>",
                 labels={
                     "cu_ppm": "Feed Copper Grade (ppm)",
-                    "RecoveredCu": "Recovered Cu (ppm)",
+                    "cu_recovered_kg": "Recovered Cu (kg)",
                     "recovery_pct": "Recovery Rate (%)"
                 },
                 color_continuous_scale="oryel"
