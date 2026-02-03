@@ -605,7 +605,7 @@ elif page == "Processing Performance":
     
     process_tab = st.radio(
         "",
-        ["⚙️ Comminution", "🧪 Flotation"],
+        ["Comminution", "Flotation"],
         horizontal=True,
         label_visibility="collapsed",
         key="process_selector"
@@ -614,7 +614,7 @@ elif page == "Processing Performance":
     st.markdown("</div></div>", unsafe_allow_html=True)
     
     # Clean up the process name
-    process_tab = process_tab.split(" ")[1]  # Remove emoji
+    # process_tab = process_tab.split(" ")[1]  # Remove emoji
 
     if process_tab == "Comminution":
         st.markdown(f"<h2 class='subsection-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
