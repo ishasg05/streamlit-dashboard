@@ -627,26 +627,64 @@ elif page == "Processing Performance":
 
     if process_tab == "Comminution":
         st.markdown(f"<h2 class='section-header'>Grinding & Size Reduction Performance</h2>", unsafe_allow_html=True)
-        st.markdown("</div></div>", unsafe_allow_html=True)
-        # st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Comminution circuit efficiency metrics</p>",
-                    # unsafe_allow_html=True)
 
         # Comminution KPIs
         col1, col2, col3, col4 = st.columns(4)
 
-        comm_metrics = [
-            ("Avg Grinding Energy", f"{comm['BondWorkMass'].mean():.1f}", "kWh/t"),
-            ("Avg Size Reduction", f"{comm['F80_P80'].mean():.1f}:1", "F80:P80"),
-            ("Avg Thickness", f"{comm['Average Thickness (mm)'].mean():.1f}", "mm"),
-            ("Max Cu Potential", f"{comm['Cu_potential_kg'].max():.0f}", "kg")
+        # Calculate metrics and determine status/colors
+        avg_energy = comm['BondWorkMass'].mean()
+        avg_size_reduction = comm['F80_P80'].mean()
+        avg_thickness = comm['Average Thickness (mm)'].mean()
+        max_cu_potential = comm['Cu_potential_kg'].max()
+
+        comm_kpis = [
+            {
+                "title": "Avg Grinding Energy",
+                "value": f"{avg_energy:.1f}",
+                "unit": "kWh/t",
+                "status": "Efficient" if avg_energy < 15 else "Monitor" if avg_energy < 20 else "High Cost",
+                "color": COLOR_EXCELLENT if avg_energy < 15 else COLOR_WARNING if avg_energy < 20 else COLOR_CRITICAL
+            },
+            {
+                "title": "Avg Size Reduction",
+                "value": f"{avg_size_reduction:.1f}:1",
+                "unit": "F80:P80",
+                "status": "Excellent" if avg_size_reduction > 25 else "Good" if avg_size_reduction > 15 else "Review",
+                "color": COLOR_EXCELLENT if avg_size_reduction > 25 else COLOR_GOOD if avg_size_reduction > 15 else COLOR_WARNING
+            },
+            {
+                "title": "Avg Thickness",
+                "value": f"{avg_thickness:.1f}",
+                "unit": "mm",
+                "status": "Good" if avg_thickness > 8 else "Monitor" if avg_thickness > 5 else "Critical",
+                "color": COLOR_EXCELLENT if avg_thickness > 8 else COLOR_WARNING if avg_thickness > 5 else COLOR_CRITICAL
+            },
+            {
+                "title": "Max Cu Potential",
+                "value": f"{max_cu_potential:.0f}",
+                "unit": "kg",
+                "status": "Excellent" if max_cu_potential > 5000 else "Good" if max_cu_potential > 2000 else "Limited",
+                "color": COLOR_EXCELLENT if max_cu_potential > 5000 else COLOR_GOOD if max_cu_potential > 2000 else COLOR_WARNING
+            }
         ]
 
-        for col, (label, value, unit) in zip([col1, col2, col3, col4], comm_metrics):
+        for col, kpi in zip([col1, col2, col3, col4], comm_kpis):
             col.markdown(f"""
-            <div style='background:{ACCENT_GOLD};padding:18px;border-radius:3px;text-align:center;border:1px solid {BORDER_COLOR};box-shadow: 0 1px 2px rgba(0,0,0,0.08);'>
-                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:20px;font-weight:600;letter-spacing:0.2px;'>{label}</h4>
-                <h2 style='color:{TEXT_LIGHT};margin:8px 0;font-size:32px;font-weight:700;'>{value}</h2>
-                <p style='color:{TEXT_LIGHT};margin:0;font-size:15px;opacity:0.9;'>{unit}</p>
+            <div class='insight-card' style='border-left-color:{kpi["color"]};background:{CARD_BG};min-height:140px;'>
+                <h4 style='color:{ACCENT_RED};margin:0;font-size:20px;text-align:center;font-weight:600;letter-spacing:0.2px;'>
+                    {kpi["title"]}
+                </h4>
+                <h2 style='margin:10px 0;font-size:32px;font-weight:700;color:{TEXT_DARK};text-align:center;'>
+                    {kpi["value"]}
+                </h2>
+                <p style='color:{TEXT_DARK};margin:0;font-size:15px;text-align:center;opacity:0.7;'>
+                    {kpi["unit"]}
+                </p>
+                <div style='text-align:center;margin-top:12px'>
+                    <span style='background:{kpi["color"]};color:white;padding:4px 12px;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:0.3px;'>
+                        {kpi["status"]}
+                    </span>
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
@@ -692,26 +730,64 @@ elif page == "Processing Performance":
 
     else:  # Flotation Circuit
         st.markdown(f"<h2 class='section-header'>Metal Recovery & Separation Performance</h2>", unsafe_allow_html=True)
-        st.markdown("</div></div>", unsafe_allow_html=True)
-        # st.markdown(f"<p style='color:{TEXT_DARK};font-size:14px;margin-bottom:20px;'>Flotation circuit efficiency metrics</p>",
-        #             unsafe_allow_html=True)
 
         # Flotation KPIs
         col1, col2, col3, col4 = st.columns(4)
 
-        flot_metrics = [
-            ("Avg Recovery Rate", f"{flot['recovery_pct'].mean():.1f}", "%"),
-            ("Total Cu Recovered", f"{flot['cu_recovered_kg'].sum():.0f}", "kg"),
-            ("Recovery Rate Std Dev", f"{flot['recovery_pct'].std():.1f}", "%"),
-            ("Max Recovery Rate", f"{flot['recovery_pct'].max():.1f}", "%")
+        # Calculate metrics and determine status/colors
+        avg_recovery = flot['recovery_pct'].mean()
+        total_cu_recovered = flot['cu_recovered_kg'].sum()
+        avg_feed_grade = flot['cu_ppm'].mean()
+        max_recovery = flot['recovery_pct'].max()
+
+        flot_kpis = [
+            {
+                "title": "Avg Recovery Rate",
+                "value": f"{avg_recovery:.1f}",
+                "unit": "%",
+                "status": "Excellent" if avg_recovery > 85 else "Good" if avg_recovery > 75 else "Review",
+                "color": COLOR_EXCELLENT if avg_recovery > 85 else COLOR_GOOD if avg_recovery > 75 else COLOR_CRITICAL
+            },
+            {
+                "title": "Total Cu Recovered",
+                "value": f"{total_cu_recovered:.0f}",
+                "unit": "kg",
+                "status": "Excellent" if total_cu_recovered > 500 else "Good" if total_cu_recovered > 300 else "Monitor",
+                "color": COLOR_EXCELLENT if total_cu_recovered > 500 else COLOR_GOOD if total_cu_recovered > 300 else COLOR_WARNING
+            },
+            {
+                "title": "Avg Feed Grade",
+                "value": f"{avg_feed_grade:.0f}",
+                "unit": "ppm",
+                "status": "Excellent" if avg_feed_grade > 1200 else "Good" if avg_feed_grade > 800 else "Low Grade",
+                "color": COLOR_EXCELLENT if avg_feed_grade > 1200 else COLOR_GOOD if avg_feed_grade > 800 else COLOR_WARNING
+            },
+            {
+                "title": "Max Recovery Rate",
+                "value": f"{max_recovery:.1f}",
+                "unit": "%",
+                "status": "Excellent" if max_recovery > 95 else "Good" if max_recovery > 90 else "Review",
+                "color": COLOR_EXCELLENT if max_recovery > 95 else COLOR_GOOD if max_recovery > 90 else COLOR_WARNING
+            }
         ]
 
-        for col, (label, value, unit) in zip([col1, col2, col3, col4], flot_metrics):
+        for col, kpi in zip([col1, col2, col3, col4], flot_kpis):
             col.markdown(f"""
-            <div style='background:{ACCENT_GOLD};padding:18px;border-radius:3px;text-align:center;border:1px solid {BORDER_COLOR};box-shadow: 0 1px 2px rgba(0,0,0,0.08);'>
-                <h4 style='color:{TEXT_LIGHT};margin:0;font-size:20px;font-weight:600;letter-spacing:0.2px;'>{label}</h4>
-                <h2 style='color:{TEXT_LIGHT};margin:8px 0;font-size:32px;font-weight:700;'>{value}</h2>
-                <p style='color:{TEXT_LIGHT};margin:0;font-size:15px;opacity:0.9;'>{unit}</p>
+            <div class='insight-card' style='border-left-color:{kpi["color"]};background:{CARD_BG};min-height:140px;'>
+                <h4 style='color:{ACCENT_RED};margin:0;font-size:20px;text-align:center;font-weight:600;letter-spacing:0.2px;'>
+                    {kpi["title"]}
+                </h4>
+                <h2 style='margin:10px 0;font-size:32px;font-weight:700;color:{TEXT_DARK};text-align:center;'>
+                    {kpi["value"]}
+                </h2>
+                <p style='color:{TEXT_DARK};margin:0;font-size:15px;text-align:center;opacity:0.7;'>
+                    {kpi["unit"]}
+                </p>
+                <div style='text-align:center;margin-top:12px'>
+                    <span style='background:{kpi["color"]};color:white;padding:4px 12px;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:0.3px;'>
+                        {kpi["status"]}
+                    </span>
+                </div>
             </div>
             """, unsafe_allow_html=True)
 
